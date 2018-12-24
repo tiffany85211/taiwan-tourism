@@ -1,19 +1,26 @@
 ---
 title: "Prepare Dataset"
-output: 
-  html_document: 
-    number_sections: true
+output:
+  html_document:
     highlight: textmate
+    number_sections: yes
     theme: spacelab
+    df_print: paged
+    toc: yes
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+  html_notebook:
+    df_print: paged
     toc: yes
 ---
-```{r Load Packages}
+```{r Load Packages, results='hide', echo=FALSE, include=FALSE}
 library(tidyverse)
 options(stringsAsFactors = F)
 ```
 
 
-```{r Read in file}
+```{r Read in file, results='hide'}
 years <- c(103, 104, 105, 106)
 all.df <- data.frame()
 for(i in 1:4) {
@@ -47,10 +54,29 @@ cols = 1:length(alltb)
 alltb[,cols] <-  apply(alltb[,cols], 2, function(x) as.numeric(as.character(x)))
 
 alltb
+# glimpse(alltb)
 # NA & double
 ```
 
-```{r}
+- 99 = 未回答
+
+## Dep. Var
+### Exchange Rate problem
+
+```{r about dollar exchange}
+(PreSum <- alltb %>% 
+  group_by(pdollar) %>% 
+  summarise(n=n(),mean_pmoney=log(mean(pmoney)), sd=sd(pmoney)))
+
+PreSum %>% 
+  ggplot(aes(x=pdollar, y=mean_pmoney))+
+  geom_point()+
+  xlab("Dollar(Category)")+ylab("Mean_Pmoney(log)")+
+  ggtitle("Before Fixing XR")
+```
+![Dollar_year106_document](./img/DollarNNation.PNG)
+
+```{r TEST glimpse simple fix XR}
 
 ```
 
