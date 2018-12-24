@@ -30,3 +30,27 @@ for(i in 1:4) {
 
 saveRDS(all.df, "alldf.rds")
 ```
+
+
+```{r data refresh}
+alldf <- readRDS("./alldf.rds")
+dim(alldf)
+alltb <- as.tibble(alldf)
+
+alltb[alltb=="."] <- NA
+alltb <- alltb %>% 
+  select(id,year,everything())
+
+# alltb
+
+cols = 1:length(alltb)
+alltb[,cols] <-  apply(alltb[,cols], 2, function(x) as.numeric(as.character(x)))
+
+alltb
+# NA & double
+```
+
+```{r}
+
+```
+
