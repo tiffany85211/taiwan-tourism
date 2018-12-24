@@ -39,11 +39,12 @@ saveRDS(all.df, "alldf.rds")
 ```
 
 
-```{r data refresh}
+```{r data type refresh}
 alldf <- readRDS("./alldf.rds")
 dim(alldf)
-alltb <- as.tibble(alldf)
+str(alldf)
 
+alltb <- as.tibble(alldf)
 alltb[alltb=="."] <- NA
 alltb <- alltb %>% 
   select(id,year,everything())
@@ -53,6 +54,7 @@ alltb <- alltb %>%
 cols = 1:length(alltb)
 alltb[,cols] <-  apply(alltb[,cols], 2, function(x) as.numeric(as.character(x)))
 
+cols = c()
 alltb
 # glimpse(alltb)
 # NA & double
@@ -75,6 +77,40 @@ PreSum %>%
   ggtitle("Before Fixing XR")
 ```
 ![Dollar_year106_document](./img/DollarNNation.PNG)
+
+```{r facet wrap dollar N some var.}
+# nation
+alltb %>% 
+  filter(!is.na(pdollar)) %>% 
+  group_by(pdollar) %>% 
+  ggplot(aes(x=nation, y=log(pmoney), color=as.factor(gender)))+
+  geom_point()+
+  facet_wrap(~pdollar)+
+  xlab("Nation")+ylab("Pmoney(log)")+
+  ggtitle("NATION: Before Fixing XR")
+
+# occup
+alltb %>% 
+  filter(!is.na(pdollar)) %>% 
+  group_by(pdollar) %>% 
+  ggplot(aes(x=occup, y=log(pmoney), color=as.factor(gender)))+
+  geom_point()+
+  facet_wrap(~pdollar)+
+  xlab("Occupation")+ylab("Pmoney(log)")+
+  ggtitle("Occupation: Before Fixing XR")
+
+alltb %>% 
+  filter(!is.na(pdollar)) %>% 
+  filter(occup!=99) %>%
+  group_by(pdollar) %>% 
+  ggplot(aes(x=occup, y=log(pmoney), color=as.factor(gender)))+
+  geom_point()+
+  facet_wrap(~pdollar)+
+  xlab("Occupation")+ylab("Pmoney(log)")+
+  ggtitle("Occup filter out 99")
+```
+![Occup_year106_document](./img/Profile.PNG)
+
 
 ```{r TEST glimpse simple fix XR}
 
