@@ -19,6 +19,17 @@ library(tidyverse)
 options(stringsAsFactors = F)
 ```
 
+```{r Set locale}
+### Check your locale environment:
+# Sys.getlocale()
+### If it is not en_US.UTF-8, do the following:
+### ==for Windows==
+# Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
+### ==for Mac======
+# Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
+```
+
+
 
 ```{r Read in file, results='hide'}
 years <- c(103, 104, 105, 106)
@@ -40,13 +51,13 @@ for(i in 1:4) {
 
 ```{r Exchange Rate}
 exchange_rate <- read.csv("./data/IFS_12-24-2018 04-52-00-89_timeSeries.csv") 
-exchange_rate$X...Country.Name[12] = "Taiwan"
+exchange_rate$Country.Name[12] = "Taiwan"
 
 exchange_rate <- exchange_rate %>%
   select(starts_with("X"), -X) %>%
-  mutate_at(.funs = funs(.[12]/.), .vars = 2:ncol(.)) %>%                   # compute from USD to NTD
+  mutate_at(.funs = funs(.[12]/.), .vars = 1:ncol(.)) %>%                   # compute from USD to NTD
   mutate(code = c(2, 14, 9, 17, 7, 1, 5, 3, 6, 8, 4, 16, 10, 18, 11)) %>%   # 問卷編碼
-  gather(.,  key = time, value = value, -X...Country.Name, -code) %>%       
+  gather(.,  key = time, value = value, -code) %>%       
   mutate(year = as.numeric(gsub("^X([0-9]+)M([0-9]+)$", "\\1", time))) %>%
   mutate(mon  = as.numeric(gsub("^X([0-9]+)M([0-9]+)$", "\\2", time)))
 
