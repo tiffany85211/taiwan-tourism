@@ -1,0 +1,255 @@
+---
+title: "Prepare Dataset"
+output:
+  html_document:
+    highlight: textmate
+    number_sections: yes
+    theme: spacelab
+    df_print: paged
+    toc: yes
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+  html_notebook:
+    df_print: paged
+    toc: yes
+---
+
+
+
+```{r}
+alldf <- readRDS("./alldf.rds")
+# filter data with other
+
+# total=451
+sum(alldf$income==99|alldf$educ==4|alldf$educ==99|alldf$nation==15|alldf$nation==90)
+
+alldf<-alldf%>%filter(alldf$income!=99&alldf$educ!=4&alldf$educ!=99&alldf$nation!=15&alldf$nation!=90)
+# category to binary
+
+## type
+
+
+for (i in 1:23989){
+  if (alldf$type[i]==1 | alldf$type[i]==2 ){
+    alldf$type12[i]=1
+  }
+  else{
+    alldf$type12[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$type[i]==3){
+    alldf$type3[i]=1
+  }
+  else{
+    alldf$type3[i]=0
+  }
+}
+
+## nation:japan,china,korea,asean,other
+
+for (i in 1:23989){
+  if (alldf$nation[i]==1){
+    alldf$japan[i]=1
+  }
+  else{
+    alldf$japan[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$nation[i]==2){
+    alldf$china[i]=1
+  }
+  else{
+    alldf$china[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if ((alldf$nation[i]==4&alldf$year[i]==2017)|alldf$nation[i]==5){
+    alldf$korea[i]=1
+  }
+  else{
+    alldf$korea[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if ((alldf$nation[i]==4&alldf$year[i]<=2016)|alldf$nation[i]==51){
+    alldf$singapore[i]=1
+  }
+  else{
+    alldf$singapore[i]=0
+  }
+}
+for (i in 1:23989){
+  if ((alldf$nation[i]==6&alldf$year[i]<=2016)|alldf$nation[i]==50){
+    alldf$malaysia[i]=1
+  }
+  else{
+    alldf$malaysia[i]=0
+  }
+}
+for (i in 1:23989){
+  if ((alldf$nation[i]==7&alldf$year[i]<=2016)|alldf$nation[i]==52|alldf$nation[i]==53|alldf$nation[i]==54|alldf$nation[i]==55|alldf$nation[i]==59){
+    alldf$otherasia[i]=1
+  }
+  else{
+    alldf$otherasia[i]=0
+  }
+}
+
+
+## age:19以???,20-29,30-39,40-49,50-59,60以???
+
+
+
+for (i in 1:23989){
+  if (alldf$age[i]==2){
+    alldf$age2029[i]=1
+  }
+  else{
+    alldf$age2029[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$age[i]==3){
+    alldf$age3039[i]=1
+  }
+  else{
+    alldf$age3039[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$age[i]==4){
+    alldf$age4049[i]=1
+  }
+  else{
+    alldf$age4049[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$age[i]==5){
+    alldf$age5059[i]=1
+  }
+  else{
+    alldf$age5059[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$age[i]==6 | alldf$age[i]==7){
+    alldf$age60[i]=1
+  }
+  else{
+    alldf$age60[i]=0
+  }
+}
+
+## income:年收???14999美???以???,15000-29999,30000-69999,70000以???,unstable
+
+
+for (i in 1:23989){
+  if (alldf$income[i]==3){
+    alldf$income1500029999[i]=1
+  }
+  else{
+    alldf$income1500029999[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$income[i]==4 |alldf$income[i]==5){
+    alldf$income3000069999[i]=1
+  }
+  else{
+    alldf$income3000069999[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$income[i]==6 |alldf$income[i]==7){
+    alldf$income70000[i]=1
+  }
+  else{
+    alldf$income70000[i]=0
+  }
+}
+
+for (i in 1:23989){
+  if (alldf$income[i]==8){
+    alldf$incomeunstable[i]=1
+  }
+  else{
+    alldf$incomeunstable[i]=0
+  }
+}
+
+## educ:senior,university,master
+
+
+for (i in 1:23989){
+  if ((alldf$educ[i]==3&alldf$year[i]==2014)|(alldf$educ[i]==2&alldf$year[i]>=2015)){
+    alldf$college[i]=1
+  }
+  else{
+    alldf$college[i]=0
+  }
+}
+
+
+for (i in 1:23989){
+  if ((alldf$educ[i]==3&alldf$year[i]>=2015)){
+    alldf$master[i]=1
+  }
+  else{
+    alldf$master[i]=0
+  }
+}
+
+## gender
+
+for (i in 1:23989){
+  if (alldf$gender[i]==1){
+    alldf$female[i]=0
+  }
+  else{
+    alldf$female[i]=1
+  }
+}
+
+```
+
+```{r}
+# setting dependant variable
+for (i in 1:23989){
+  alldf$totalmoney[i]<-alldf$money[i]+alldf$pmoney[i]
+}
+
+for (i in 1:23989){
+  alldf$money6[i]<-alldf$money6[i]
+}
+```
+
+```{r}
+# running ols regression
+## totalmoney???log
+
+lm<-lm(log(alldf$totalmoney)~alldf$stay+alldf$freq+alldf$type12+alldf$type3+alldf$age2029+alldf$age3039+alldf$age4049+alldf$age5059+alldf$age60+alldf$income1500029999+alldf$income3000069999+alldf$income70000+alldf$incomeunstable+alldf$college+alldf$master+alldf$gender+alldf$japan+alldf$china+alldf$singapore+alldf$korea+alldf$malaysia+alldf$otherasia+alldf$year)
+
+lm1<-lm(log(alldf$money6)~alldf$stay+alldf$freq+alldf$type12+alldf$type3+alldf$age2029+alldf$age3039+alldf$age4049+alldf$age5059+alldf$age60+alldf$income1500029999+alldf$income3000069999+alldf$income70000+alldf$incomeunstable+alldf$college+alldf$master+alldf$gender+alldf$japan+alldf$china+alldf$singapore+alldf$korea+alldf$malaysia+alldf$otherasia+alldf$year)
+
+summary(lm)
+summary(lm1)
+```
+
+```{r Save to Rds}
+saveRDS(alldf, "alldfbinary.rds")
+alldfbinary <- readRDS("./alldfbinary.rds")
+```
