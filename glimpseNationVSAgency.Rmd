@@ -20,7 +20,10 @@ alldf %>%
   # facet_wrap(~re) +
   ggtitle("各國跟團百分比(%)") +
   ylab("跟團性質") + xlab("國家") +
-  scale_y_continuous(trans = "reverse")
+  scale_y_continuous(trans = "reverse")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 
 alldf %>% 
   mutate(nation=as.factor(nation),type=as.factor(type)) %>% 
@@ -29,6 +32,9 @@ alldf %>%
   # facet_wrap(~re) +
   ggtitle("各國跟團百分比(%)") +
   ylab("跟團性質") + xlab("國家") +
-  scale_y_continuous(trans = "reverse")
+  scale_y_continuous(trans = "reverse")+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
 ```
 
