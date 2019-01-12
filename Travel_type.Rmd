@@ -22,9 +22,6 @@ alldf$type[(alldf$type == 5)] = 4
 alldf %>% group_by(nation)  %>% count(nation, type) %>%  mutate(percent = n/sum(n))
 
 # 畫直方圖
-
-
-
 alldf <- alldf %>%
   mutate(moneyAll = money + pmoney)
 
@@ -37,7 +34,7 @@ summary(a)
 
 alldf %>% 
   group_by(nation) %>% 
-  summarise_at(vars(moneyAll), median, na.rm = TRUE)    
+  summarise_at(vars(money6), mean, na.rm = TRUE)
 
 ```
 
