@@ -38,8 +38,8 @@ for(i in 1:4) {
   file.name <- paste0("./data/", years[i], "年來臺旅客消費及動向調查(原始資料).csv")
   df <- read.csv(file.name, fileEncoding = "BIG5")
   df <- df %>%
-    filter(purp1 == 1 | purp2 == 1) %>%        # filter pupose == 觀光
     mutate(id = sprintf("%d%04d", years[i]+1911, as.numeric(rownames(.)))) %>% 
+    filter(purp1 == 1) %>%        # filter main pupose == 觀光
     mutate(year = years[i]+1911) %>%
     select(id, year, mon, nation, age, income, educ, occup, gender, stay, freq, purp1, type, btimes, bprice, prepay, pmoney, pdollar, airf, pit1, pit2, pit3, pit4, pit5, money, dollar, money1, p1, money2, p2, money3, p3, money4, p4, money5, p5, money6, p6, m601, m602, m603, m604, m605, m606, m607, m608, m609, m610, act01, act02, act03, act04, act05, act06, act07, act08, act09, act10, act11, act12, act13, act14, act15, act16, act17, act18, act19, sp01, sp02, sp03, sp04, sp05, sp06, sp07, sp08, sp09, sp10, sp11, sp12, sp13, sp14, sp15) %>%
     na_if(., ".") %>%                          # replace "." with NA
@@ -98,6 +98,13 @@ all.df$nation[(all.df$year == 2017) & (all.df$nation %in% c(50, 52, 53, 54, 55, 
 all.df$nation[(all.df$year == 2017) & (all.df$nation %in% c(60, 70, 80))] = 8
 all.df$nation[(all.df$year == 2017) & (all.df$nation == 90)] = 15
 all.df$nation[(all.df$year == 2017) & (all.df$nation == 95)] = 16
+```
+
+
+```{r Outlier Problem}
+
+
+all.df <- all.df[-c(14160),]
 ```
 
 

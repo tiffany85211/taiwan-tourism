@@ -16,14 +16,16 @@ output:
 ---
 
 ```{r}
-alldf <- readRDS("./alldf.rds")
-alldf$type[(alldf$type == 2)] = 1  # 1: 跟團，2:自由行，3:混合
+alldf <- readRDS("./all.rds")
+alldf$type[(alldf$type == 3)] = 2  # 1: 跟團，2:自由行，3:混合
 alldf$type[(alldf$type == 5)] = 4  
 alldf %>% group_by(nation)  %>% count(nation, type) %>%  mutate(percent = n/sum(n))
 
 # 畫直方圖
 alldf <- alldf %>%
-  mutate(moneyAll = money + pmoney)
+  mutate(moneyAll = money + pmoney) %>%
+  mutate(moneyAve = moneyAll / stay) %>%
+  mutate(money6Ave = money6 / stay) 
 
 alldf %>% 
   group_by(nation) %>% 
@@ -34,7 +36,15 @@ summary(a)
 
 alldf %>% 
   group_by(nation) %>% 
-  summarise_at(vars(money6), mean, na.rm = TRUE)
+  summarise_at(vars(moneyAve), mean, na.rm = TRUE)
 
+alldf %>% 
+  group_by(nation, type) %>% 
+  summarise_at(vars(moneyAve), mean, na.rm = TRUE) %>% 
+  arrange(desc(moneyAve))
+
+alldf %>%
+  group_by(nation) %>% 
+  summarise_at(vars(stay), mean, na.rm = TRUE)
 ```
 
