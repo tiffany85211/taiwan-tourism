@@ -19,9 +19,25 @@ output:
 alldf <- readRDS("./alldf.rds")
 alldf$type[(alldf$type == 2)] = 1  # 1: 跟團，2:自由行，3:混合
 alldf$type[(alldf$type == 5)] = 4  
-alldf %>% count(nation, type) %>% group_by(nation)  %>%  mutate(percent = n/sum(n))
+alldf %>% group_by(nation)  %>% count(nation, type) %>%  mutate(percent = n/sum(n))
 
 # 畫直方圖
+
+
+
+alldf <- alldf %>%
+  mutate(moneyAll = money + pmoney)
+
+alldf %>% 
+  group_by(nation) %>% 
+  summarise_at(vars(btimes), mean, na.rm = TRUE)      
+
+a <- alldf %>% filter (nation == 1) %>% select(moneyAll)
+summary(a)
+
+alldf %>% 
+  group_by(nation) %>% 
+  summarise_at(vars(moneyAll), median, na.rm = TRUE)    
 
 ```
 
