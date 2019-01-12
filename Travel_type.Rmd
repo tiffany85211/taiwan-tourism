@@ -16,7 +16,7 @@ output:
 ---
 
 ```{r}
-alldf <- readRDS("./alldf.rds")
+alldf <- readRDS("./all.rds")
 alldf$type[(alldf$type == 2)] = 1  # 1: 跟團，2:自由行，3:混合
 alldf$type[(alldf$type == 5)] = 4  
 alldf %>% group_by(nation)  %>% count(nation, type) %>%  mutate(percent = n/sum(n))
@@ -35,6 +35,57 @@ summary(a)
 alldf %>% 
   group_by(nation) %>% 
   summarise_at(vars(money6), mean, na.rm = TRUE)
+
+```
+
+```{r plot}
+
+# Type 4 bigger
+
+alldf %>% 
+  mutate(nation=as.factor(nation),type=as.factor(type)) %>% 
+  ggplot(aes(x=nation, fill=type)) + 
+  geom_bar(position="fill") +
+  coord_flip() + 
+  # facet_wrap(~re) +
+  ggtitle("各國跟團百分比(%)") +
+  ylab("跟團性質") + xlab("國家") +
+  scale_y_continuous(trans = "reverse")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+alldf %>% 
+  mutate(nation=as.factor(nation),type=as.factor(type)) %>% 
+  ggplot(aes(x=nation, fill=type)) + 
+  geom_bar(position="fill") +
+  # facet_wrap(~re) +
+  ggtitle("各國跟團百分比(%)") +
+  ylab("跟團性質") + xlab("國家") +
+  scale_y_continuous(trans = "reverse")+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+# Type 1 bigger
+alldf %>% 
+  mutate(nation=as.factor(nation),type=as.factor(type)) %>% 
+  arrange(type) %>% 
+  ggplot(aes(x=nation, fill=type)) + 
+  geom_bar(position="fill") +
+  coord_flip() + 
+  # facet_wrap(~re) +
+  ggtitle("各國跟團百分比(%)") +
+  ylab("跟團性質") + xlab("國家") +
+  scale_y_continuous(trans = "reverse")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r}
+
+
 
 ```
 
