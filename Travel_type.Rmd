@@ -1,0 +1,27 @@
+---
+title: "Travel Type"
+output:
+  html_document:
+    highlight: textmate
+    number_sections: yes
+    theme: spacelab
+    df_print: paged
+    toc: yes
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+  html_notebook:
+    df_print: paged
+    toc: yes
+---
+
+```{r}
+alldf <- readRDS("./alldf.rds")
+alldf$type[(alldf$type == 2)] = 1  # 1: 跟團，2:自由行，3:混合
+alldf$type[(alldf$type == 5)] = 4  
+alldf %>% count(nation, type) %>% group_by(nation)  %>%  mutate(percent = n/sum(n))
+
+# 畫直方圖
+
+```
+
