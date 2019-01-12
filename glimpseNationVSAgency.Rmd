@@ -38,6 +38,7 @@ dfbeforefilter %>%
 
 
 dfAfterFilter <- data.frame()
+t_vec <- c()
 
 # Multiple filter out outliers
 for (i in 1:nrow(mvnStat)){
@@ -53,6 +54,7 @@ for (i in 1:nrow(mvnStat)){
   tempdf %>% 
     nrow() %>% print()
   
+  t_vec <- c(t_vec, nrow(tempdf))
   # dfbeforefilter %>%
   #   filter(!is.na(pmoney) & !is.na(money)) %>%
   #   filter(nation == mvnStat[i, ]$nation) %>%
@@ -67,6 +69,17 @@ for (i in 1:nrow(mvnStat)){
 saveRDS(dfAfterFilter, "dfAfterFilter.rds")
  
 ```
+
+```{r}
+BVAcount <- dfbeforefilter %>% 
+  filter(!is.na(pmoney) & !is.na(money)) %>%
+  group_by(nation) %>% 
+  count
+
+BVAcount <- cbind(BVAcount, n_filtered=t_vec)
+BVAcount
+```
+
 
 
 ```{r}
