@@ -9,7 +9,70 @@ output: html_document
 library(tidyverse)
 alldf <- readRDS("./alldf.rds")
 # alldf
+
+dfbeforefilter <- readRDS("./all.rds")
+
+mvnStat <- dfbeforefilter %>% 
+  filter(!is.na(pmoney) & !is.na(money)) %>% 
+  group_by(nation) %>% 
+  summarise(mpm = mean(pmoney), mm = mean(money), sdpm= sd(pmoney), sdm=sd(money))
+
+mvnStat <- mvnStat %>% 
+  mutate(mLowBound=mm-3*sdm, mUpBound=mm+3*sdm) %>% 
+  mutate(pLowBound=mpm-3*sdpm, pUpBound=mpm+3*sdpm)
+
+mvnStat
+
+# Samples amount: by nations
+dfbeforefilter %>% 
+  group_by(nation) %>% 
+  count
+
+# Single filter out outliers
+dfbeforefilter %>% 
+  filter(!is.na(pmoney) & !is.na(money)) %>% 
+  filter(nation==1) %>% 
+  # filter(money<mvnStat$mLowBound[1])
+  filter(money<mvnStat$mUpBound[1])
+  # nrow # 3000
+
+
+dfAfterFilter <- data.frame()
+
+# Multiple filter out outliers
+for (i in 1:nrow(mvnStat)){
+  
+  # print(mvnStat[i,]$nation)
+  
+  tempdf <- dfbeforefilter %>%
+    filter(!is.na(pmoney) & !is.na(money)) %>%
+    filter(nation == mvnStat[i, ]$nation) %>%
+    # filter(money<mvnStat$mLowBound[1])
+    filter(money<mvnStat$mUpBound[i], pmoney<mvnStat$pUpBound[i])
+
+  tempdf %>% 
+    nrow() %>% print()
+  
+  # dfbeforefilter %>%
+  #   filter(!is.na(pmoney) & !is.na(money)) %>%
+  #   filter(nation == mvnStat[i, ]$nation) %>%
+  #   # filter(money<mvnStat$mLowBound[1])
+  #   filter(pmoney>mvnStat$pUpBound[i]) %>% 
+  #   nrow() %>% print()
+  
+  dfAfterFilter <- rbind(dfAfterFilter, tempdf)
+  
+}
+
+saveRDS(dfAfterFilter, "dfAfterFilter.rds")
+ 
 ```
+
+
+```{r}
+mvnStat$mUpBound[1]
+```
+
 
 ```{r}
 alldf %>% 
