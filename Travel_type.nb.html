@@ -178,22 +178,95 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsZGYgJT4lIFxuICBncm91cF9ieShuYXRpb24sIHR5cGUpICU+JSBcbiAgc3VtbWFyaXNlX2F0KHZhcnMobW9uZXlBdmUpLCBtZWFuLCBuYS5ybSA9IFRSVUUpKVxuXG5gYGAifQ== -->
-<pre class="r"><code>alldf %&gt;% 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsZGYgPC0gcmVhZFJEUyhcIi4vYWxsLnJkc1wiKVxuYWxsZGYkdHlwZVsoYWxsZGYkdHlwZSA9PSAzKV0gPSAyICAjIDE6IOi3n+WcmO+8jDI66Ieq55Sx6KGM77yMMzrmt7flkIhcbmFsbGRmJHR5cGVbKGFsbGRmJHR5cGUgPT0gNSldID0gNCAgXG5hbGxkZiAlPiUgZ3JvdXBfYnkobmF0aW9uKSAgJT4lIGNvdW50KG5hdGlvbiwgdHlwZSkgJT4lICBtdXRhdGUocGVyY2VudCA9IG4vc3VtKG4pKVxuXG4jIOeVq+ebtOaWueWcllxuYWxsZGYgPC0gYWxsZGYgJT4lXG4gIG11dGF0ZShtb25leUFsbCA9IG1vbmV5ICsgcG1vbmV5KSAlPiVcbiAgbXV0YXRlKG1vbmV5QXZlID0gbW9uZXlBbGwgLyBzdGF5KSAlPiVcbiAgbXV0YXRlKG1vbmV5NkF2ZSA9IG1vbmV5NiAvIHN0YXkpIFxuXG5hbGxkZiAlPiUgXG4gIGdyb3VwX2J5KG5hdGlvbikgJT4lIFxuICBzdW1tYXJpc2VfYXQodmFycyhidGltZXMpLCBtZWFuLCBuYS5ybSA9IFRSVUUpICAgICAgXG5cbmEgPC0gYWxsZGYgJT4lIGZpbHRlciAobmF0aW9uID09IDEpICU+JSBzZWxlY3QobW9uZXlBbGwpXG5zdW1tYXJ5KGEpXG5cbmFsbGRmICU+JSBcbiAgZ3JvdXBfYnkobmF0aW9uKSAlPiUgXG4gIHN1bW1hcmlzZV9hdCh2YXJzKG1vbmV5QXZlKSwgbWVhbiwgbmEucm0gPSBUUlVFKVxuXG5hbGxkZiAlPiUgXG4gIGdyb3VwX2J5KG5hdGlvbiwgdHlwZSkgJT4lIFxuICBzdW1tYXJpc2VfYXQodmFycyhtb25leUF2ZSksIG1lYW4sIG5hLnJtID0gVFJVRSkgJT4lIFxuICBhcnJhbmdlKGRlc2MobW9uZXlBdmUpKVxuXG5hbGxkZiAlPiVcbiAgZ3JvdXBfYnkobmF0aW9uKSAlPiUgXG4gIHN1bW1hcmlzZV9hdCh2YXJzKHN0YXkpLCBtZWFuLCBuYS5ybSA9IFRSVUUpXG5gYGAifQ== -->
+<pre class="r"><code>alldf &lt;- readRDS(&quot;./all.rds&quot;)
+alldf$type[(alldf$type == 3)] = 2  # 1: 跟團，2:自由行，3:混合
+alldf$type[(alldf$type == 5)] = 4  
+alldf %&gt;% group_by(nation)  %&gt;% count(nation, type) %&gt;%  mutate(percent = n/sum(n))
+
+# 畫直方圖
+alldf &lt;- alldf %&gt;%
+  mutate(moneyAll = money + pmoney) %&gt;%
+  mutate(moneyAve = moneyAll / stay) %&gt;%
+  mutate(money6Ave = money6 / stay) 
+
+alldf %&gt;% 
+  group_by(nation) %&gt;% 
+  summarise_at(vars(btimes), mean, na.rm = TRUE)      
+
+a &lt;- alldf %&gt;% filter (nation == 1) %&gt;% select(moneyAll)
+summary(a)
+
+alldf %&gt;% 
+  group_by(nation) %&gt;% 
+  summarise_at(vars(moneyAve), mean, na.rm = TRUE)
+
+alldf %&gt;% 
   group_by(nation, type) %&gt;% 
-  summarise_at(vars(moneyAve), mean, na.rm = TRUE))
-</code></pre>
+  summarise_at(vars(moneyAve), mean, na.rm = TRUE) %&gt;% 
+  arrange(desc(moneyAve))
+
+alldf %&gt;%
+  group_by(nation) %&gt;% 
+  summarise_at(vars(stay), mean, na.rm = TRUE)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IHVuZXhwZWN0ZWQgJyknIGluOlxuXCIgIGdyb3VwX2J5KG5hdGlvbiwgdHlwZSkgJT4lIFxuICBzdW1tYXJpc2VfYXQodmFycyhtb25leUF2ZSksIG1lYW4sIG5hLnJtID0gVFJVRSkpXCJcbiJ9 -->
-<pre><code>Error: unexpected ')' in:
-&quot;  group_by(nation, type) %&gt;% 
-  summarise_at(vars(moneyAve), mean, na.rm = TRUE))&quot;</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIFR5cGUgNCBiaWdnZXJcblxuYWxsZGYgJT4lIFxuICBtdXRhdGUobmF0aW9uPWFzLmZhY3RvcihuYXRpb24pLHR5cGU9YXMuZmFjdG9yKHR5cGUpKSAlPiUgXG4gIGdncGxvdChhZXMoeD1uYXRpb24sIGZpbGw9dHlwZSkpICsgXG4gIGdlb21fYmFyKHBvc2l0aW9uPVwiZmlsbFwiKSArXG4gIGNvb3JkX2ZsaXAoKSArIFxuICAjIGZhY2V0X3dyYXAofnJlKSArXG4gIGdndGl0bGUoXCLlkITlnIvot5/lnJjnmb7liIbmr5QoJSlcIikgK1xuICB5bGFiKFwi6Lef5ZyY5oCn6LOqXCIpICsgeGxhYihcIuWci+WutlwiKSArXG4gIHNjYWxlX3lfY29udGludW91cyh0cmFucyA9IFwicmV2ZXJzZVwiKStcbiAgdGhlbWUoYXhpcy50aXRsZS54PWVsZW1lbnRfYmxhbmsoKSxcbiAgICAgICAgYXhpcy50ZXh0Lng9ZWxlbWVudF9ibGFuaygpLFxuICAgICAgICBheGlzLnRpY2tzLng9ZWxlbWVudF9ibGFuaygpKVxuXG5hbGxkZiAlPiUgXG4gIG11dGF0ZShuYXRpb249YXMuZmFjdG9yKG5hdGlvbiksdHlwZT1hcy5mYWN0b3IodHlwZSkpICU+JSBcbiAgZ2dwbG90KGFlcyh4PW5hdGlvbiwgZmlsbD10eXBlKSkgKyBcbiAgZ2VvbV9iYXIocG9zaXRpb249XCJmaWxsXCIpICtcbiAgIyBmYWNldF93cmFwKH5yZSkgK1xuICBnZ3RpdGxlKFwi5ZCE5ZyL6Lef5ZyY55m+5YiG5q+UKCUpXCIpICtcbiAgeWxhYihcIui3n+WcmOaAp+izqlwiKSArIHhsYWIoXCLlnIvlrrZcIikgK1xuICBzY2FsZV95X2NvbnRpbnVvdXModHJhbnMgPSBcInJldmVyc2VcIikrXG4gIHRoZW1lKGF4aXMudGl0bGUueT1lbGVtZW50X2JsYW5rKCksXG4gICAgICAgIGF4aXMudGV4dC55PWVsZW1lbnRfYmxhbmsoKSxcbiAgICAgICAgYXhpcy50aWNrcy55PWVsZW1lbnRfYmxhbmsoKSlcblxuIyBUeXBlIDEgYmlnZ2VyXG5hbGxkZiAlPiUgXG4gIG11dGF0ZShuYXRpb249YXMuZmFjdG9yKG5hdGlvbiksdHlwZT1hcy5mYWN0b3IodHlwZSkpICU+JSBcbiAgYXJyYW5nZSh0eXBlKSAlPiUgXG4gIGdncGxvdChhZXMoeD1uYXRpb24sIGZpbGw9dHlwZSkpICsgXG4gIGdlb21fYmFyKHBvc2l0aW9uPVwiZmlsbFwiKSArXG4gIGNvb3JkX2ZsaXAoKSArIFxuICAjIGZhY2V0X3dyYXAofnJlKSArXG4gIGdndGl0bGUoXCLlkITlnIvot5/lnJjnmb7liIbmr5QoJSlcIikgK1xuICB5bGFiKFwi6Lef5ZyY5oCn6LOqXCIpICsgeGxhYihcIuWci+WutlwiKSArXG4gIHNjYWxlX3lfY29udGludW91cyh0cmFucyA9IFwicmV2ZXJzZVwiKStcbiAgdGhlbWUoYXhpcy50aXRsZS54PWVsZW1lbnRfYmxhbmsoKSxcbiAgICAgICAgYXhpcy50ZXh0Lng9ZWxlbWVudF9ibGFuaygpLFxuICAgICAgICBheGlzLnRpY2tzLng9ZWxlbWVudF9ibGFuaygpKVxuYGBgIn0= -->
+<pre class="r"><code>
+# Type 4 bigger
+
+alldf %&gt;% 
+  mutate(nation=as.factor(nation),type=as.factor(type)) %&gt;% 
+  ggplot(aes(x=nation, fill=type)) + 
+  geom_bar(position=&quot;fill&quot;) +
+  coord_flip() + 
+  # facet_wrap(~re) +
+  ggtitle(&quot;各國跟團百分比(%)&quot;) +
+  ylab(&quot;跟團性質&quot;) + xlab(&quot;國家&quot;) +
+  scale_y_continuous(trans = &quot;reverse&quot;)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+alldf %&gt;% 
+  mutate(nation=as.factor(nation),type=as.factor(type)) %&gt;% 
+  ggplot(aes(x=nation, fill=type)) + 
+  geom_bar(position=&quot;fill&quot;) +
+  # facet_wrap(~re) +
+  ggtitle(&quot;各國跟團百分比(%)&quot;) +
+  ylab(&quot;跟團性質&quot;) + xlab(&quot;國家&quot;) +
+  scale_y_continuous(trans = &quot;reverse&quot;)+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+# Type 1 bigger
+alldf %&gt;% 
+  mutate(nation=as.factor(nation),type=as.factor(type)) %&gt;% 
+  arrange(type) %&gt;% 
+  ggplot(aes(x=nation, fill=type)) + 
+  geom_bar(position=&quot;fill&quot;) +
+  coord_flip() + 
+  # facet_wrap(~re) +
+  ggtitle(&quot;各國跟團百分比(%)&quot;) +
+  ylab(&quot;跟團性質&quot;) + xlab(&quot;國家&quot;) +
+  scale_y_continuous(trans = &quot;reverse&quot;)+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiVHJhdmVsIFR5cGUiCm91dHB1dDoKICBodG1sX2RvY3VtZW50OgogICAgaGlnaGxpZ2h0OiB0ZXh0bWF0ZQogICAgbnVtYmVyX3NlY3Rpb25zOiB5ZXMKICAgIHRoZW1lOiBzcGFjZWxhYgogICAgZGZfcHJpbnQ6IHBhZ2VkCiAgICB0b2M6IHllcwogICAgdG9jX2Zsb2F0OiAKICAgICAgY29sbGFwc2VkOiBmYWxzZQogICAgICBzbW9vdGhfc2Nyb2xsOiB0cnVlCiAgaHRtbF9ub3RlYm9vazoKICAgIGRmX3ByaW50OiBwYWdlZAogICAgdG9jOiB5ZXMKLS0tCgpgYGB7cn0KYWxsZGYgPC0gcmVhZFJEUygiLi9hbGwucmRzIikKYWxsZGYkdHlwZVsoYWxsZGYkdHlwZSA9PSAzKV0gPSAyICAjIDE6IOi3n+WcmO+8jDI66Ieq55Sx6KGM77yMMzrmt7flkIgKYWxsZGYkdHlwZVsoYWxsZGYkdHlwZSA9PSA1KV0gPSA0ICAKYWxsZGYgJT4lIGdyb3VwX2J5KG5hdGlvbikgICU+JSBjb3VudChuYXRpb24sIHR5cGUpICU+JSAgbXV0YXRlKHBlcmNlbnQgPSBuL3N1bShuKSkKCiMg55Wr55u05pa55ZyWCmFsbGRmIDwtIGFsbGRmICU+JQogIG11dGF0ZShtb25leUFsbCA9IG1vbmV5ICsgcG1vbmV5KSAlPiUKICBtdXRhdGUobW9uZXlBdmUgPSBtb25leUFsbCAvIHN0YXkpICU+JQogIG11dGF0ZShtb25leTZBdmUgPSBtb25leTYgLyBzdGF5KSAKCmFsbGRmICU+JSAKICBncm91cF9ieShuYXRpb24pICU+JSAKICBzdW1tYXJpc2VfYXQodmFycyhidGltZXMpLCBtZWFuLCBuYS5ybSA9IFRSVUUpICAgICAgCgphIDwtIGFsbGRmICU+JSBmaWx0ZXIgKG5hdGlvbiA9PSAxKSAlPiUgc2VsZWN0KG1vbmV5QWxsKQpzdW1tYXJ5KGEpCgphbGxkZiAlPiUgCiAgZ3JvdXBfYnkobmF0aW9uKSAlPiUgCiAgc3VtbWFyaXNlX2F0KHZhcnMobW9uZXlBdmUpLCBtZWFuLCBuYS5ybSA9IFRSVUUpCgphbGxkZiAlPiUgCiAgZ3JvdXBfYnkobmF0aW9uLCB0eXBlKSAlPiUgCiAgc3VtbWFyaXNlX2F0KHZhcnMobW9uZXlBdmUpLCBtZWFuLCBuYS5ybSA9IFRSVUUpICU+JSAKICBhcnJhbmdlKGRlc2MobW9uZXlBdmUpKQoKYWxsZGYgJT4lCiAgZ3JvdXBfYnkobmF0aW9uKSAlPiUgCiAgc3VtbWFyaXNlX2F0KHZhcnMoc3RheSksIG1lYW4sIG5hLnJtID0gVFJVRSkKYGBgCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiVHJhdmVsIFR5cGUiCm91dHB1dDoKICBodG1sX2RvY3VtZW50OgogICAgaGlnaGxpZ2h0OiB0ZXh0bWF0ZQogICAgbnVtYmVyX3NlY3Rpb25zOiB5ZXMKICAgIHRoZW1lOiBzcGFjZWxhYgogICAgZGZfcHJpbnQ6IHBhZ2VkCiAgICB0b2M6IHllcwogICAgdG9jX2Zsb2F0OiAKICAgICAgY29sbGFwc2VkOiBmYWxzZQogICAgICBzbW9vdGhfc2Nyb2xsOiB0cnVlCiAgaHRtbF9ub3RlYm9vazoKICAgIGRmX3ByaW50OiBwYWdlZAogICAgdG9jOiB5ZXMKLS0tCgpgYGB7cn0KYWxsZGYgPC0gcmVhZFJEUygiLi9hbGwucmRzIikKYWxsZGYkdHlwZVsoYWxsZGYkdHlwZSA9PSAzKV0gPSAyICAjIDE6IOi3n+WcmO+8jDI66Ieq55Sx6KGM77yMMzrmt7flkIgKYWxsZGYkdHlwZVsoYWxsZGYkdHlwZSA9PSA1KV0gPSA0ICAKYWxsZGYgJT4lIGdyb3VwX2J5KG5hdGlvbikgICU+JSBjb3VudChuYXRpb24sIHR5cGUpICU+JSAgbXV0YXRlKHBlcmNlbnQgPSBuL3N1bShuKSkKCiMg55Wr55u05pa55ZyWCmFsbGRmIDwtIGFsbGRmICU+JQogIG11dGF0ZShtb25leUFsbCA9IG1vbmV5ICsgcG1vbmV5KSAlPiUKICBtdXRhdGUobW9uZXlBdmUgPSBtb25leUFsbCAvIHN0YXkpICU+JQogIG11dGF0ZShtb25leTZBdmUgPSBtb25leTYgLyBzdGF5KSAKCmFsbGRmICU+JSAKICBncm91cF9ieShuYXRpb24pICU+JSAKICBzdW1tYXJpc2VfYXQodmFycyhidGltZXMpLCBtZWFuLCBuYS5ybSA9IFRSVUUpICAgICAgCgphIDwtIGFsbGRmICU+JSBmaWx0ZXIgKG5hdGlvbiA9PSAxKSAlPiUgc2VsZWN0KG1vbmV5QWxsKQpzdW1tYXJ5KGEpCgphbGxkZiAlPiUgCiAgZ3JvdXBfYnkobmF0aW9uKSAlPiUgCiAgc3VtbWFyaXNlX2F0KHZhcnMobW9uZXlBdmUpLCBtZWFuLCBuYS5ybSA9IFRSVUUpCgphbGxkZiAlPiUgCiAgZ3JvdXBfYnkobmF0aW9uLCB0eXBlKSAlPiUgCiAgc3VtbWFyaXNlX2F0KHZhcnMobW9uZXlBdmUpLCBtZWFuLCBuYS5ybSA9IFRSVUUpICU+JSAKICBhcnJhbmdlKGRlc2MobW9uZXlBdmUpKQoKYWxsZGYgJT4lCiAgZ3JvdXBfYnkobmF0aW9uKSAlPiUgCiAgc3VtbWFyaXNlX2F0KHZhcnMoc3RheSksIG1lYW4sIG5hLnJtID0gVFJVRSkKYGBgCgpgYGB7ciBwbG90fQoKIyBUeXBlIDQgYmlnZ2VyCgphbGxkZiAlPiUgCiAgbXV0YXRlKG5hdGlvbj1hcy5mYWN0b3IobmF0aW9uKSx0eXBlPWFzLmZhY3Rvcih0eXBlKSkgJT4lIAogIGdncGxvdChhZXMoeD1uYXRpb24sIGZpbGw9dHlwZSkpICsgCiAgZ2VvbV9iYXIocG9zaXRpb249ImZpbGwiKSArCiAgY29vcmRfZmxpcCgpICsgCiAgIyBmYWNldF93cmFwKH5yZSkgKwogIGdndGl0bGUoIuWQhOWci+i3n+WcmOeZvuWIhuavlCglKSIpICsKICB5bGFiKCLot5/lnJjmgKfos6oiKSArIHhsYWIoIuWci+WutiIpICsKICBzY2FsZV95X2NvbnRpbnVvdXModHJhbnMgPSAicmV2ZXJzZSIpKwogIHRoZW1lKGF4aXMudGl0bGUueD1lbGVtZW50X2JsYW5rKCksCiAgICAgICAgYXhpcy50ZXh0Lng9ZWxlbWVudF9ibGFuaygpLAogICAgICAgIGF4aXMudGlja3MueD1lbGVtZW50X2JsYW5rKCkpCgphbGxkZiAlPiUgCiAgbXV0YXRlKG5hdGlvbj1hcy5mYWN0b3IobmF0aW9uKSx0eXBlPWFzLmZhY3Rvcih0eXBlKSkgJT4lIAogIGdncGxvdChhZXMoeD1uYXRpb24sIGZpbGw9dHlwZSkpICsgCiAgZ2VvbV9iYXIocG9zaXRpb249ImZpbGwiKSArCiAgIyBmYWNldF93cmFwKH5yZSkgKwogIGdndGl0bGUoIuWQhOWci+i3n+WcmOeZvuWIhuavlCglKSIpICsKICB5bGFiKCLot5/lnJjmgKfos6oiKSArIHhsYWIoIuWci+WutiIpICsKICBzY2FsZV95X2NvbnRpbnVvdXModHJhbnMgPSAicmV2ZXJzZSIpKwogIHRoZW1lKGF4aXMudGl0bGUueT1lbGVtZW50X2JsYW5rKCksCiAgICAgICAgYXhpcy50ZXh0Lnk9ZWxlbWVudF9ibGFuaygpLAogICAgICAgIGF4aXMudGlja3MueT1lbGVtZW50X2JsYW5rKCkpCgojIFR5cGUgMSBiaWdnZXIKYWxsZGYgJT4lIAogIG11dGF0ZShuYXRpb249YXMuZmFjdG9yKG5hdGlvbiksdHlwZT1hcy5mYWN0b3IodHlwZSkpICU+JSAKICBhcnJhbmdlKHR5cGUpICU+JSAKICBnZ3Bsb3QoYWVzKHg9bmF0aW9uLCBmaWxsPXR5cGUpKSArIAogIGdlb21fYmFyKHBvc2l0aW9uPSJmaWxsIikgKwogIGNvb3JkX2ZsaXAoKSArIAogICMgZmFjZXRfd3JhcCh+cmUpICsKICBnZ3RpdGxlKCLlkITlnIvot5/lnJjnmb7liIbmr5QoJSkiKSArCiAgeWxhYigi6Lef5ZyY5oCn6LOqIikgKyB4bGFiKCLlnIvlrrYiKSArCiAgc2NhbGVfeV9jb250aW51b3VzKHRyYW5zID0gInJldmVyc2UiKSsKICB0aGVtZShheGlzLnRpdGxlLng9ZWxlbWVudF9ibGFuaygpLAogICAgICAgIGF4aXMudGV4dC54PWVsZW1lbnRfYmxhbmsoKSwKICAgICAgICBheGlzLnRpY2tzLng9ZWxlbWVudF9ibGFuaygpKQpgYGAKCmBgYHtyfQoKCgpgYGAKCg==</div>
 
 
 
