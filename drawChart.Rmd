@@ -172,6 +172,22 @@ tempdf %>%
 
 ```
 
+```{r}
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, year) %>% 
+  summarise(mean=as.integer(sum(tmoney))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=year, y=mean, fill=nation, label = mean)) + 
+  geom_col(position = "fill") + 
+    ggtitle("2014~2017各國消費比例圖") +
+  ylab("總消費") + xlab("") +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+```
+
+
 - (nation, m1-m6)
 各國消費細項
 
@@ -187,7 +203,7 @@ m60detail <- tempdf %>%
             m7=as.integer(mean(m607)),
             m8=as.integer(mean(m608)),
             m9=as.integer(mean(m609)),
-            m10=as.integer(mean(m610)),
+            m10=as.integer(mean(m610))
             ) %>% 
   ungroup() 
 ```
