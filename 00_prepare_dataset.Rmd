@@ -101,13 +101,39 @@ all.df$nation[(all.df$year == 2017) & (all.df$nation == 95)] = 16
 ```
 
 
-```{r Outlier Problem}
-
-
-all.df <- all.df[-c(14160),]
-```
-
-
 ```{r Save to Rds}
 saveRDS(all.df, "all.rds")
 ```
+
+```{r Outlier Problem}
+
+# all.df <- all.df[-c(14160),]
+
+dfbeforefilter <- readRDS("./all.rds")
+
+# mvnStat: money by nation
+mvnStat <- dfbeforefilter %>% 
+  filter(!is.na(pmoney) & !is.na(money)) %>% 
+  group_by(nation) %>% 
+  summarise(mpm = mean(pmoney), mm = mean(money), sdpm= sd(pmoney), sdm=sd(money))
+
+mvnStat <- mvnStat %>% 
+  mutate(mLowBound=mm-3*sdm, mUpBound=mm+3*sdm) %>% 
+  mutate(pLowBound=mpm-3*sdpm, pUpBound=mpm+3*sdpm)
+
+
+# Filter out outliers
+dfAfterFilter <- data.frame()
+
+for (i in 1:nrow(mvnStat)){
+  tempdf <- dfbeforefilter %>%
+    filter(!is.na(pmoney) & !is.na(money)) %>%
+    filter(nation == mvnStat[i, ]$nation) %>%
+    filter(money<mvnStat$mUpBound[i], pmoney<mvnStat$pUpBound[i])
+
+  dfAfterFilter <- rbind(dfAfterFilter, tempdf)
+}
+
+saveRDS(dfAfterFilter, "dfAfterFilter.rds")
+```
+
