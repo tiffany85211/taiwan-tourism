@@ -185,6 +185,19 @@ tempdf %>%
   theme(axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank())
+
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, year) %>% 
+  summarise(mean=as.integer(sum(tmoney))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=year, y=mean, fill=nation, label = mean)) + 
+  geom_col(position = "stack") + 
+    ggtitle("2014~2017各國消費統計圖") +
+  ylab("總消費") + xlab("") +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
 ```
 
 
@@ -203,8 +216,60 @@ m60detail <- tempdf %>%
             m7=as.integer(mean(m607)),
             m8=as.integer(mean(m608)),
             m9=as.integer(mean(m609)),
-            m10=as.integer(mean(m610))
+            m99=as.integer(mean(m610))
             ) %>% 
-  ungroup() 
+  ungroup()
+
+m60detail <- m60detail %>% 
+  gather(key = category, value=mean, -nation)
+
+m60detail %>% 
+  ggplot(aes(x=category, y=mean, fill=nation))+
+  geom_col(position = "fill")+
+  scale_fill_manual(values = c("white","red", "orange", "black", "yellow", "blue"))+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
 ```
 
+
+各國消費細項
+
+```{r}
+actDetail <- tempdf %>% 
+  group_by(nation) %>% 
+  summarise(a01=as.integer(sum(act01)),
+            a02=as.integer(sum(act02)),
+            a03=as.integer(sum(act03)),
+            a04=as.integer(sum(act04)),
+            a05=as.integer(sum(act05)),
+            a06=as.integer(sum(act06)),
+            a07=as.integer(sum(act07)),
+            a08=as.integer(sum(act08)),
+            a09=as.integer(sum(act09)),
+            a10=as.integer(sum(act10)),
+            a11=as.integer(sum(act11)),
+            a12=as.integer(sum(act12)),
+            a13=as.integer(sum(act13)),
+            a14=as.integer(sum(act14)),
+            a15=as.integer(sum(act15)),
+            a16=as.integer(sum(act16)),
+            a17=as.integer(sum(act17)),
+            a18=as.integer(sum(act18)),
+            a19=as.integer(sum(act19))
+            ) %>% 
+  ungroup()
+
+actDetail <- actDetail %>% 
+  gather(key = activity, value=sum, -nation)
+
+actDetail %>% 
+  ggplot(aes(x=activity, y=sum, fill=nation))+
+  geom_col(position = "fill")+
+  scale_fill_manual(values = c("white","red", "orange", "black", "yellow", "blue"))+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+```
