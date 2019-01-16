@@ -1,0 +1,27 @@
+```{r}
+dfAfterFilter<-readRDS("/Users/xiaotingrong/Desktop/taiwan-tourism-master/dfAfterFilter.rds")
+#平均消費金額
+meanmoney<-mean(dfAfterFilter$money[1:17079],na.rm = TRUE)
+print( meanmoney)
+#學歷中位數
+median_educ<-median(dfAfterFilter$educ[1:17079],na.rm = TRUE)
+print(median_educ )
+#收入中位數
+median_income<-median(dfAfterFilter$income[1:17079],na.rm = TRUE)
+print(median_income)
+#平均購物金額
+mean(dfAfterFilter$money6[1:17079],na.rm = TRUE)
+#各種類的消費金額平均
+mean(dfAfterFilter$m601[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m602[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m603[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m604[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m605[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m606[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m607[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m608[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m609[1:17079],na.rm = TRUE)
+mean(dfAfterFilter$m610[1:17079],na.rm = TRUE)
+#
+```
+

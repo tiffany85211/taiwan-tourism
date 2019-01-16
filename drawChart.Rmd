@@ -1,0 +1,275 @@
+---
+title: "drawChart"
+author: "Ivan Chen"
+date: "2019年1月13日"
+output: 
+  html_document:
+    highlight: textmate
+    number_sections: yes
+    theme: spacelab
+    df_print: paged
+    toc: yes
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+  html_notebook:
+    df_print: paged
+    toc: yes
+---
+
+# 各種圖表
+
+```{r prepare, include=FALSE}
+library(tidyverse)
+library(scales)
+tempdf <- readRDS("./dfAfterFilter.rds")
+glimpse(tempdf)
+tempdf <- tempdf %>% 
+  mutate(nation=as.factor(nation), type=as.factor(type))
+
+
+tempdf$type[(tempdf$type == 3)] = 2  # 1: 跟團，2:混和，3:自由
+tempdf$type[(tempdf$type == 5)] = 4  
+tempdf$type[(tempdf$type == 4)] = 3  
+
+tempdf <- tempdf %>% 
+  filter(nation!="15")
+```
+
+## 各國人跟團、不跟團消費
+- (nation, type, (money+pmoney))
+- (nation, type, money6)
+
+```{r agency}
+# 1 Total Consumption
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, type) %>% 
+  summarise(mean=as.integer(mean(tmoney))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=type, y=mean, label = mean)) + 
+  geom_col() + 
+  facet_wrap(~nation) +
+    ggtitle("各國跟團或自由行旅客之「總消費」均值") +
+  ylab("總消費") + xlab("旅行方式") +
+  geom_text(size = 4, position = position_stack(vjust = 1.2))+
+  scale_y_continuous(labels=function(x){paste0(x/1000, 'K')})
+
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, type) %>% 
+  summarise(sum=as.integer(sum(tmoney))) %>% 
+    ungroup() %>% 
+  ggplot(aes(x=type, y=sum, label=sum)) + 
+  geom_col() +
+   facet_wrap(~nation) +
+  ggtitle("各國跟團或自由行旅客之「總消費」") +
+  ylab("總消費") + xlab("旅行方式") +
+  geom_text(size = 3, position = position_stack(vjust = -0.1))+
+  scale_y_continuous(labels=function(x){paste0(x/1000000, 'M')})
+
+# 2 in Taiwan
+tempdf %>% 
+  filter(!is.na(money6)) %>% 
+  group_by(nation, type) %>% 
+  summarise(mean=as.integer(mean(money6))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=type, y=mean, label=mean)) + 
+  geom_col() + 
+  facet_wrap(~nation) +
+  ggtitle("各國跟團或自由行旅客之「在台購物費」均值") +
+  ylab("在台消費") + xlab("旅行方式")+
+  geom_text(size = 4, position = position_stack(vjust = 1.2))+
+  scale_y_continuous(labels=function(x){paste0(x/1000, 'K')})
+
+tempdf %>% 
+  filter(!is.na(money6)) %>% 
+  group_by(nation, type) %>% 
+  summarise(sum=as.integer(sum(money6))) %>% 
+    ungroup() %>% 
+  ggplot(aes(x=type, y=sum, label=sum)) + 
+  geom_col() +
+   facet_wrap(~nation) +
+  ggtitle("各國跟團或自由行旅客之「在台購物費」") +
+  ylab("在台消費") + xlab("旅行方式")+
+  geom_text(size = 3, position = position_stack(vjust = -0.1))+
+  scale_y_continuous(labels=function(x){paste0(x/1000000, 'M')})
+```
+
+- (nation, type, (money+pmoney/stay))    
+
+```{r}
+# divided by $stay: consumption per day
+
+tempdf %>% 
+  mutate(tmoneyPerDay=(money+pmoney)/stay) %>% 
+  group_by(nation, type) %>% 
+  summarise(mean=as.integer(mean(tmoneyPerDay))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=type, y=mean, label = mean)) + 
+  geom_col() + 
+  facet_wrap(~nation) +
+    ggtitle("各國跟團或自由行旅客之「日均總消費」") +
+  ylab("日均總消費") + xlab("旅行方式") +
+  geom_text(size = 4, position = position_stack(vjust = 1.2))+
+  scale_y_continuous(labels=function(x){paste0(x/1000, 'K')})
+
+tempdf %>% 
+  filter(!is.na(money6)) %>% 
+  mutate(moneyInTWperDay=money6/stay) %>% 
+  group_by(nation, type) %>% 
+  summarise(mean=as.integer(mean(moneyInTWperDay))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=type, y=mean, label=mean)) + 
+  geom_col() + 
+  facet_wrap(~nation) +
+  ggtitle("各國跟團或自由行旅客之「日均在台購物費」") +
+  ylab("在台消費") + xlab("旅行方式")+
+  geom_text(size = 4, position = position_stack(vjust = 1.2))+
+  scale_y_continuous(labels=function(x){paste0(x/1000, 'K')})
+```
+
+
+## 各國隨年分消費比例
+
+- (year, nation, (money+pmoney))
+
+```{r}
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, year) %>% 
+  summarise(mean=as.integer(sum(tmoney))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=year, y=mean, label = mean)) + 
+  geom_line() + 
+  facet_wrap(~nation) +
+    ggtitle("2014~2017各國「總消費」趨勢圖") +
+  ylab("總消費") + xlab("年") +
+  scale_y_continuous(labels=function(x){paste0(x/1000000, 'M')})+
+  scale_x_continuous(labels=function(x){paste0(x%%100, '')})
+
+
+# China
+tempdf %>% 
+  filter(nation==2) %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  ggplot(aes(x=year, y=tmoney)) +
+  geom_col() +
+    ggtitle("中國旅客「總消費」在2016年後銳減") +
+  ylab("總消費") + xlab("年") +
+  scale_y_continuous(labels=function(x){paste0(x/1000000, 'M')})
+
+# SEA
+tempdf %>% 
+  filter(nation==6) %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  ggplot(aes(x=year, y=tmoney)) +
+  geom_col() +
+    ggtitle("東南亞旅客「總消費」逐年增長") +
+  ylab("總消費") + xlab("年") +
+  scale_y_continuous(labels=function(x){paste0(x/1000000, 'M')})
+
+
+```
+
+```{r}
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, year) %>% 
+  summarise(mean=as.integer(sum(tmoney))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=year, y=mean, fill=nation, label = mean)) + 
+  geom_col(position = "fill") + 
+    ggtitle("2014~2017各國消費比例圖") +
+  ylab("總消費") + xlab("") +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+tempdf %>% 
+  mutate(tmoney=money+pmoney) %>% 
+  group_by(nation, year) %>% 
+  summarise(mean=as.integer(sum(tmoney))) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=year, y=mean, fill=nation, label = mean)) + 
+  geom_col(position = "stack") + 
+    ggtitle("2014~2017各國消費統計圖") +
+  ylab("總消費") + xlab("") +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+```
+
+
+- (nation, m1-m6)
+各國消費細項
+
+```{r}
+m60detail <- tempdf %>% 
+  group_by(nation) %>% 
+  summarise(m1=as.integer(mean(m601)),
+            m2=as.integer(mean(m602)),
+            m3=as.integer(mean(m603)),
+            m4=as.integer(mean(m604)),
+            m5=as.integer(mean(m605)),
+            m6=as.integer(mean(m606)),
+            m7=as.integer(mean(m607)),
+            m8=as.integer(mean(m608)),
+            m9=as.integer(mean(m609)),
+            m99=as.integer(mean(m610))
+            ) %>% 
+  ungroup()
+
+m60detail <- m60detail %>% 
+  gather(key = category, value=mean, -nation)
+
+m60detail %>% 
+  ggplot(aes(x=category, y=mean, fill=nation))+
+  geom_col(position = "fill")+
+  scale_fill_manual(values = c("white","red", "orange", "black", "yellow", "blue"))+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+```
+
+
+各國消費細項
+
+```{r}
+actDetail <- tempdf %>% 
+  group_by(nation) %>% 
+  summarise(a01=as.integer(sum(act01)),
+            a02=as.integer(sum(act02)),
+            a03=as.integer(sum(act03)),
+            a04=as.integer(sum(act04)),
+            a05=as.integer(sum(act05)),
+            a06=as.integer(sum(act06)),
+            a07=as.integer(sum(act07)),
+            a08=as.integer(sum(act08)),
+            a09=as.integer(sum(act09)),
+            a10=as.integer(sum(act10)),
+            a11=as.integer(sum(act11)),
+            a12=as.integer(sum(act12)),
+            a13=as.integer(sum(act13)),
+            a14=as.integer(sum(act14)),
+            a15=as.integer(sum(act15)),
+            a16=as.integer(sum(act16)),
+            a17=as.integer(sum(act17)),
+            a18=as.integer(sum(act18)),
+            a19=as.integer(sum(act19))
+            ) %>% 
+  ungroup()
+
+actDetail <- actDetail %>% 
+  gather(key = activity, value=sum, -nation)
+
+actDetail %>% 
+  ggplot(aes(x=activity, y=sum, fill=nation))+
+  geom_col(position = "fill")+
+  scale_fill_manual(values = c("white","red", "orange", "black", "yellow", "blue"))+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+```
