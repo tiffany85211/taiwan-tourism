@@ -1,0 +1,282 @@
+---
+title: "Regression"
+output: html_notebook
+---
+
+# package: tidyverse;dyplr
+# read updated data
+
+```{r}
+library(tidyverse)
+options(stringsAsFactors = F)
+```
+
+
+# categorical to dummy variables
+
+```{r}
+df <- matrix(0,nrow=17076,ncol=1)
+df<-as.data.frame(df)
+df<-dfAfterFilter
+## type baseline:free travel
+
+
+for (i in 1:17076){
+  if (df$type[i]==1){
+    df$grouptour[i]=1
+  }
+  else{
+    df$grouptour[i]=0
+  }
+}
+
+
+for (i in 1:17076){
+  if (df$type[i]==2|df$type[i]==3){
+    df$mixed[i]=1
+  }
+  else{
+    df$mixed[i]=0
+  }
+}
+
+## nation baseline:china
+
+df<-df%>%filter(df$nation!=15)
+
+for (i in 1:17039){
+  if (df$nation[i]==1){
+    df$japan[i]=1
+  }
+  else{
+    df$japan[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$nation[i]==4){
+    df$singapore[i]=1
+  }
+  else{
+    df$singapore[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$nation[i]==5){
+    df$korea[i]=1
+  }
+  else{
+    df$korea[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$nation[i]==6){
+    df$otherasia[i]=1
+  }
+  else{
+    df$otherasia[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$nation[i]==8){
+    df$EuroAmeriaNewAus[i]=1
+  }
+  else{
+    df$EuroAmeriaNewAus[i]=0
+  }
+}
+
+## age baseline:under20
+
+
+
+for (i in 1:17039){
+  if (df$age[i]==2){
+    df$age2029[i]=1
+  }
+  else{
+    df$age2029[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$age[i]==3){
+    df$age3039[i]=1
+  }
+  else{
+    df$age3039[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$age[i]==4){
+    df$age4049[i]=1
+  }
+  else{
+    df$age4049[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$age[i]==5){
+    df$age5059[i]=1
+  }
+  else{
+    df$age5059[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$age[i]==6 | df$age[i]==7){
+    df$age60[i]=1
+  }
+  else{
+    df$age60[i]=0
+  }
+}
+
+## income baseline:below15000US$
+
+df$income[is.na(df$income)] <- 0
+
+for (i in 1:17039){
+  if (df$income[i]==3){
+    df$income1500029999[i]=1
+  }
+  else{
+    df$income1500029999[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$income[i]==4 |df$income[i]==5){
+    df$income3000069999[i]=1
+  }
+  else{
+    df$income3000069999[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$income[i]==6 |df$income[i]==7){
+    df$income70000[i]=1
+  }
+  else{
+    df$income70000[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$income[i]==8){
+    df$incomeunstable[i]=1
+  }
+  else{
+    df$incomeunstable[i]=0
+  }
+}
+
+## educ baseline:senior
+
+df$educ[is.na(df$educ)] <- 0
+
+for (i in 1:17039){
+  if ((df$educ[i]==3&df$year[i]==2014)|(df$educ[i]==2&df$year[i]>=2015)){
+    df$college[i]=1
+  }
+  else{
+    df$college[i]=0
+  }
+}
+
+
+for (i in 1:17039){
+  if ((df$educ[i]==3&df$year[i]>=2015)){
+    df$master[i]=1
+  }
+  else{
+    df$master[i]=0
+  }
+}
+
+## gender baseline:male
+
+for (i in 1:17039){
+  if (df$gender[i]==1){
+    df$female[i]=0
+  }
+  else{
+    df$female[i]=1
+  }
+}
+
+## year baseline:2014
+
+for (i in 1:17039){
+  if (df$year[i]==2015){
+    df$y2015[i]=1
+  }
+  else{
+    df$y2015[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$year[i]==2016){
+    df$y2016[i]=1
+  }
+  else{
+    df$y2016[i]=0
+  }
+}
+
+for (i in 1:17039){
+  if (df$year[i]==2017){
+    df$y2017[i]=1
+  }
+  else{
+    df$y2017[i]=0
+  }
+}
+```
+
+# setting dependant variable
+
+```{r}
+# totalmoney:money+pmoney
+
+for (i in 1:17039){
+  df$totalmoney[i]<-df$money[i]+df$pmoney[i]
+}
+
+# shopping:money6
+
+for (i in 1:17039){
+  df$shopping[i]<-df$money6[i]
+}
+```
+
+# running ols regression
+```{r}
+## log totalmoney
+
+lmtotalmoney<-lm(log(df$totalmoney)~df$y2015+df$y2016+df$y2017+df$stay+df$freq+df$grouptour+df$mixed+df$japan+df$singapore+df$korea+df$otherasia+df$EuroAmeriaNewAus+df$age2029+df$age3039+df$age4049+df$age5059+df$age60+df$income1500029999+df$income3000069999+df$income70000+df$incomeunstable+df$college+df$master+df$gender)
+
+lmshopping<-lm(log(df$shopping)~df$y2015+df$y2016+df$y2017+df$stay+df$freq+df$grouptour+df$mixed+df$japan+df$singapore+df$korea+df$otherasia+df$EuroAmeriaNewAus+df$age2029+df$age3039+df$age4049+df$age5059+df$age60+df$income1500029999+df$income3000069999+df$income70000+df$incomeunstable+df$college+df$master+df$gender)
+
+
+summary(lmtotalmoney)
+summary(lmshopping)
+
+
+```
+
+# regression with interaction terms
+
+```{r}
+
+lm1<-lm(log(df$totalmoney)~df$y2015*df$y2016*df$y2017*df$stay*df$freq*df$grouptour*df$mixed*df$japan*df$singapore*df$korea*df$otherasia*df$EuroAmeriaNewAus*df$age2029*df$age3039*df$age4049*df$age5059*df$age60*df$income1500029999*df$income3000069999*df$income70000*df$incomeunstable*df$college*df$master*df$gender)
+```
+
